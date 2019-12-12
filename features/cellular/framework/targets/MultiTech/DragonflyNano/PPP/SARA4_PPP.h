@@ -28,6 +28,7 @@
 #endif /* TARGET_FF_ARDUINO */
 
 #include "AT_CellularDevice.h"
+#include "AT_CellularContext.h"
 
 namespace mbed {
 
@@ -38,6 +39,7 @@ public:
 
 public: // CellularDevice
     virtual AT_CellularNetwork *open_network_impl(ATHandler &at);
+    virtual AT_CellularContext *create_context_impl(ATHandler &at, const char *apn, bool cp_req, bool nonip_req);
 };
 
 } // namespace mbed

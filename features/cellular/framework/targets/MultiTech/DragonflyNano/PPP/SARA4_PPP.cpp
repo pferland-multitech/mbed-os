@@ -23,9 +23,9 @@ using namespace mbed;
 using namespace events;
 
 static const intptr_t cellular_properties[AT_CellularBase::PROPERTY_MAX] = {
-    AT_CellularNetwork::RegistrationModeLAC,// C_EREG
-    AT_CellularNetwork::RegistrationModeDisable,    // C_GREG
-    AT_CellularNetwork::RegistrationModeLAC,    // C_REG
+    AT_CellularNetwork::RegistrationModeLAC, // C_EREG
+    AT_CellularNetwork::RegistrationModeLAC, // C_GREG
+    AT_CellularNetwork::RegistrationModeDisable, // C_REG
     0,  // AT_CGSN_WITH_TYPE
     0,  // AT_CGDATA
     1,  // AT_CGAUTH
@@ -52,7 +52,7 @@ AT_CellularNetwork *SARA4_PPP::open_network_impl(ATHandler &at)
 
 AT_CellularContext *SARA4_PPP::create_context_impl(ATHandler &at, const char *apn, bool cp_req, bool nonip_req)
 {
-    return new SARA4_PPP_CellularContext(at, apn, cp_req, nonip_req);
+    return new SARA4_PPP_CellularContext(at, this, apn, cp_req, nonip_req);
 }
 
 #if MBED_CONF_SARA4_PPP_PROVIDE_DEFAULT
