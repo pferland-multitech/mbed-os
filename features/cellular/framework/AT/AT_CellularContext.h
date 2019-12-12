@@ -102,7 +102,7 @@ protected:
     virtual bool get_context();
     pdp_type_t string_to_pdp_type(const char *pdp_type);
     AT_CellularBase::CellularProperty pdp_type_t_to_cellular_property(pdp_type_t pdp_type);
-    bool set_new_context(int cid);
+    virtual bool set_new_context(int cid);
 private:
 #if NSAPI_PPP_AVAILABLE
     nsapi_error_t open_data_channel();

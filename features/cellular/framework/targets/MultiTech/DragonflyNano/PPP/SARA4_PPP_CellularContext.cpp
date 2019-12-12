@@ -16,6 +16,61 @@ SARA4_PPP_CellularContext::~SARA4_PPP_CellularContext()
 
 }
 
+bool SARA4_PPP_CellularContext::get_context()
+{
+    bool modem_supports_ipv6 = get_property(PROPERTY_IPV6_PDP_TYPE);
+    bool modem_supports_ipv4 = get_property(PROPERTY_IPV4_PDP_TYPE);
+    _at.cmd_start("AT+CGDCONT?");
+    _at.cmd_stop();
+    _at.resp_start("+CGDCONT:");
+    _cid = -1;
+    int cid_max = 0; // needed when creating new context
+    char apn[MAX_ACCESSPOINT_NAME_LENGTH];
+    int apn_len = 0;
+
+    while (_at.info_resp()) {
+        int cid = _at.read_int();
+        if (cid > cid_max) {
+            cid_max = cid;
+        }
+        char pdp_type_from_context[10];
+        int pdp_type_len = _at.read_string(pdp_type_from_context, sizeof(pdp_type_from_context));
+        if (pdp_type_len > 0) {
+            apn_len = _at.read_string(apn, sizeof(apn));
+            if (apn_len >= 0) {
+                if (_apn && (strcmp(apn, _apn) != 0)) {
+                    continue;
+                }
+
+                // APN matched -> Check PDP type
+                pdp_type_t pdp_type = string_to_pdp_type(pdp_type_from_context);
+
+                // Accept exact matching PDP context type
+                if (get_property(pdp_type_t_to_cellular_property(pdp_type))) {
+                    _pdp_type = pdp_type;
+                    _cid = cid;
+                }
+            }
+        }
+    }
+
+    _at.resp_stop();
+    if (_cid == -1) { // no suitable context was found so create a new one
+        if (!set_new_context(cid_max + 1)) {
+            return false;
+        }
+    }
+
+    // save the apn
+    if (apn_len > 0 && !_apn) {
+        memcpy(_found_apn, apn, apn_len + 1);
+    }
+
+    tr_info("Found PDP context %d", _cid);
+
+    return true;
+}
+
 bool SARA4_PPP_CellularContext::set_new_context(int cid)
 {
     bool modem_supports_ipv6 = get_property(PROPERTY_IPV6_PDP_TYPE);

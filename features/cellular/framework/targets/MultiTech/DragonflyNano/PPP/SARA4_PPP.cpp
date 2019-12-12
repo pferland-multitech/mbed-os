@@ -17,13 +17,14 @@
 
 #include "SARA4_PPP.h"
 #include "SARA4_PPP_CellularNetwork.h"
+#include "SARA4_PPP_CellularContext.h"
 
 using namespace mbed;
 using namespace events;
 
 static const intptr_t cellular_properties[AT_CellularBase::PROPERTY_MAX] = {
-    AT_CellularNetwork::RegistrationModeDisable,// C_EREG
-    AT_CellularNetwork::RegistrationModeLAC,    // C_GREG
+    AT_CellularNetwork::RegistrationModeLAC,// C_EREG
+    AT_CellularNetwork::RegistrationModeDisable,    // C_GREG
     AT_CellularNetwork::RegistrationModeLAC,    // C_REG
     0,  // AT_CGSN_WITH_TYPE
     0,  // AT_CGDATA
@@ -33,8 +34,8 @@ static const intptr_t cellular_properties[AT_CellularBase::PROPERTY_MAX] = {
     1,  // AT_CMGF
     1,  // AT_CSDH
     1,  // PROPERTY_IPV4_STACK
-    0,  // PROPERTY_IPV6_STACK
-    0,  // PROPERTY_IPV4V6_STACK
+    1,  // PROPERTY_IPV6_STACK
+    1,  // PROPERTY_IPV4V6_STACK
     0,  // PROPERTY_NON_IP_PDP_TYPE
     1,  // PROPERTY_AT_CGEREP
 };
@@ -47,6 +48,11 @@ SARA4_PPP::SARA4_PPP(FileHandle *fh) : AT_CellularDevice(fh)
 AT_CellularNetwork *SARA4_PPP::open_network_impl(ATHandler &at)
 {
     return new SARA4_PPP_CellularNetwork(at);
+}
+
+AT_CellularContext *SARA4_PPP::create_context_impl(ATHandler &at, const char *apn, bool cp_req, bool nonip_req)
+{
+    return new SARA4_PPP_CellularContext(at, apn, cp_req, nonip_req);
 }
 
 #if MBED_CONF_SARA4_PPP_PROVIDE_DEFAULT

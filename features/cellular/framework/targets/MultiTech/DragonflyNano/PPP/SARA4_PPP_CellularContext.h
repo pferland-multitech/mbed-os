@@ -12,6 +12,7 @@ public:
 
 protected:
     virtual bool set_new_context(int cid);
+    virtual bool get_context();
 };
 
 } // namespace mbed
