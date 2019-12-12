@@ -41,6 +41,10 @@ bool SARA4_PPP_CellularContext::get_context()
                 if (_apn && (strcmp(apn, _apn) != 0)) {
                     continue;
                 }
+                // PDP type must match exactly
+                if(strcmp(pdp_type_from_context, "IPV4V6") != 0){
+                    continue;
+                }
 
                 // APN matched -> Check PDP type
                 pdp_type_t pdp_type = string_to_pdp_type(pdp_type_from_context);
